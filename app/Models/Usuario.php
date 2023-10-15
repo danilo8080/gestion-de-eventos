@@ -15,7 +15,7 @@ class Usuario extends Model
     use HasApiTokens, HasFactory, Notifiable;
     protected $table = "usuario";
      
-    @var array<int, string>
+    
 
     protected $fillable = [
         'email',
