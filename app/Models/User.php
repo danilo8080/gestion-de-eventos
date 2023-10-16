@@ -12,7 +12,15 @@ class User extends Model
 
     public $table = "users";
 
-    protected $fillable = ("*");
+    protected $fillable = [
+        'id',
+        'email',
+        'foto',
+        'nombre',
+        'apodo',
+        'password',
+
+    ];
         
 
 

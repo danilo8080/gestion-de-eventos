@@ -1,39 +1,40 @@
 <?php
-//kkkkkk
+
 namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller as BaseController;
-use app\Models\Usuario;
+use Illuminate\Routing\Controller ;
+use App\Models\User;
 
 
-class Controller extends BaseController
+class userController extends Controller
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    public function get(){
+    public function obtener(){
         try{
-            $data = Usuario::get();
+            $data = User::get();
             return response()->json($data, 200);
         }
         catch(\throwable $th){
           return response()->json(['error' => $th->getMessage()], 500);
+          
         }
     }
 
 
     public  function post(Request $request){
         try{
-            $data['id'] = $request['id'];
+            
             $data['nombre'] = $request['nombre'];
             $data['email'] = $request['email'];
             $data['apodo'] = $request['apodo'];
             $data['foto'] = $request['foto'];
             $data['password'] = $request['password'];
-            $res = Usuario::post($data);
+            $res = User::post($data);
             return response()->json($res, 200);
 
         }catch(\throwable $th){
@@ -44,7 +45,7 @@ class Controller extends BaseController
 
     public  function getbyId($id){
         try{
-            $data = Usuario::find($id);
+            $data = User::find($id);
             return response()->json($data, 200);
             
         }catch(\throwable $th){
@@ -60,8 +61,8 @@ class Controller extends BaseController
             $data['apodo'] = $request['apodo'];
             $data['foto'] = $request['foto'];
             $data['password'] = $request['password'];
-            Usuario::find($id)->update($data);
-            $res = Usuario::find($id);
+            User::find($id)->update($data);
+            $res = User::find($id);
             return response()->json($res, 200);
 
         }catch(\throwable $th){
@@ -72,7 +73,7 @@ class Controller extends BaseController
 
     public  function delete($id){
         try{
-            $res = Usuario::find($id)->delete();
+            $res = User::find($id)->delete();
             return response()->json(["deleted" => $res], 200);
             
         }catch(\throwable $th){
