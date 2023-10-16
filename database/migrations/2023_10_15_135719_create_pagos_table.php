@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('pagos', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('idSaldo');
+            $table->date('fecha', 50);
+            $table->float('valor', 50);
             $table->timestamps();
+            $table->foreign('idSaldo')->references('id')->on('saldos');
         });
     }
 

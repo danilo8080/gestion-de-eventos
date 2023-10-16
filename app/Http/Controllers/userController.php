@@ -27,6 +27,7 @@ class Controller extends BaseController
 
     public  function post(Request $request){
         try{
+            $data['id'] = $request['id'];
             $data['nombre'] = $request['nombre'];
             $data['email'] = $request['email'];
             $data['apodo'] = $request['apodo'];
@@ -41,9 +42,9 @@ class Controller extends BaseController
         }
     }
 
-    public  function getbyId($email){
+    public  function getbyId($id){
         try{
-            $data = Usuario::find($email);
+            $data = Usuario::find($id);
             return response()->json($data, 200);
             
         }catch(\throwable $th){
@@ -52,15 +53,15 @@ class Controller extends BaseController
         }
     }
 
-    public  function put(request $request,$email){
+    public  function put(request $request,$id){
         try{
             $data['nombre'] = $request['nombre'];
             $data['email'] = $request['email'];
             $data['apodo'] = $request['apodo'];
             $data['foto'] = $request['foto'];
             $data['password'] = $request['password'];
-            Usuario::find($email)->update($data);
-            $res = Usuario::find($email);
+            Usuario::find($id)->update($data);
+            $res = Usuario::find($id);
             return response()->json($res, 200);
 
         }catch(\throwable $th){
@@ -69,9 +70,9 @@ class Controller extends BaseController
         }
     }
 
-    public  function delete($email){
+    public  function delete($id){
         try{
-            $res = Usuario::find($email)->delete();
+            $res = Usuario::find($id)->delete();
             return response()->json(["deleted" => $res], 200);
             
         }catch(\throwable $th){
