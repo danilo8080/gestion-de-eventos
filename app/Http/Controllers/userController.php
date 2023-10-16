@@ -1,11 +1,13 @@
 <?php
-
+//kkkkkk
 namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
-use app\model\Usuario;
+use app\Models\Usuario;
 
 
 class Controller extends BaseController
@@ -18,15 +20,63 @@ class Controller extends BaseController
             return response()->json($data, 200);
         }
         catch(\throwable $th){
-            return return response()->json(['error' => $th->getMessage()], 500);
+          return response()->json(['error' => $th->getMessage()], 500);
         }
     }
 
 
     public  function post(Request $request){
         try{
-            
+            $data['nombre'] = $request['nombre'];
+            $data['email'] = $request['email'];
+            $data['apodo'] = $request['apodo'];
+            $data['foto'] = $request['foto'];
+            $data['password'] = $request['password'];
+            $res = Usuario::post($data);
+            return response()->json($res, 200);
 
-        }catch(){}
+        }catch(\throwable $th){
+             return response()->json(['error' => $th->getMessage()], 500);
+
+        }
+    }
+
+    public  function getbyId($email){
+        try{
+            $data = Usuario::find($email);
+            return response()->json($data, 200);
+            
+        }catch(\throwable $th){
+             return response()->json(['error' => $th->getMessage()], 500);
+
+        }
+    }
+
+    public  function put(request $request,$email){
+        try{
+            $data['nombre'] = $request['nombre'];
+            $data['email'] = $request['email'];
+            $data['apodo'] = $request['apodo'];
+            $data['foto'] = $request['foto'];
+            $data['password'] = $request['password'];
+            Usuario::find($email)->update($data);
+            $res = Usuario::find($email);
+            return response()->json($res, 200);
+
+        }catch(\throwable $th){
+             return response()->json(['error' => $th->getMessage()], 500);
+
+        }
+    }
+
+    public  function delete($email){
+        try{
+            $res = Usuario::find($email)->delete();
+            return response()->json(["deleted" => $res], 200);
+            
+        }catch(\throwable $th){
+             return response()->json(['error' => $th->getMessage()], 500);
+
+        }
     }
 }
