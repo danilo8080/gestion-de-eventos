@@ -18,7 +18,7 @@ use app\Http\Controller\userController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 
-Route::prefix('v1\Usuario')->group(function(){
+Route::prefix('/v1/Usuario')->group(function(){
     Route::get('/',[userController::class, 'get']);
     Route::post('/',[userController::class, 'post']);
     Route::get('/{id}',[userController::class, 'getbyId']);
