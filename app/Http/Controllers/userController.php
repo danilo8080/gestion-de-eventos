@@ -35,7 +35,7 @@ class UserController extends Controller
             $data['foto'] = $request['foto'];
             $data['password'] = $request['password'];
             $res = User::create($data);
-            return response()->json($res, 200);
+            return response()->json($res, 201);
 
         }catch(\throwable $th){
              return response()->json(['error' => $th->getMessage()], 500);

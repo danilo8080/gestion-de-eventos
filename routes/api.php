@@ -20,9 +20,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
    });
 
    Route::prefix('/v1/Usuario')->group(function(){
-    Route::get('/',[UserController::class, 'obtener']);
-    // Route::get('/', 'userController@obtener');
-    Route::post('/',[UserController::class, 'post']);
+    Route::get('/',[UserController::class, 'obtener'])->name('obtener');
+    Route::post('/',[UserController::class, 'post'])->name('create');
     Route::get('/{id}',[UserController::class, 'getbyId']);
     Route::put('/{id}',[UserController::class, 'put']);
     Route::delete('/{id}',[UserController::class, 'delete']);
