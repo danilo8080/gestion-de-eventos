@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controller\userController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +17,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-});
+   });
+
+   Route::prefix('v1/Usuario')->group(function(){
+    Route::get('/',[userController::class, 'obtener']);
+    Route::post('/',[userController::class, 'post']);
+    Route::get('/{id}',[userController::class, 'getbyId']);
+    Route::put('/{id}',[userController::class, 'put']);
+    Route::delete('/{id}',[userController::class, 'delete']);
+
+}); 
+
