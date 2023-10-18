@@ -10,7 +10,7 @@ use Illuminate\Routing\Controller ;
 use App\Models\User;
 
 
-class userController extends Controller
+class UserController extends Controller
 {
     use AuthorizesRequests, ValidatesRequests;
 
@@ -21,20 +21,20 @@ class userController extends Controller
         }
         catch(\throwable $th){
           return response()->json(['error' => $th->getMessage()], 500);
-          
+
         }
     }
 
 
     public  function post(Request $request){
         try{
-            
+
             $data['nombre'] = $request['nombre'];
             $data['email'] = $request['email'];
             $data['apodo'] = $request['apodo'];
             $data['foto'] = $request['foto'];
             $data['password'] = $request['password'];
-            $res = User::post($data);
+            $res = User::create($data);
             return response()->json($res, 200);
 
         }catch(\throwable $th){
@@ -47,7 +47,7 @@ class userController extends Controller
         try{
             $data = User::find($id);
             return response()->json($data, 200);
-            
+
         }catch(\throwable $th){
              return response()->json(['error' => $th->getMessage()], 500);
 
@@ -75,7 +75,7 @@ class userController extends Controller
         try{
             $res = User::find($id)->delete();
             return response()->json(["deleted" => $res], 200);
-            
+
         }catch(\throwable $th){
              return response()->json(['error' => $th->getMessage()], 500);
 
