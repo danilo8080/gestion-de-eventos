@@ -8,48 +8,44 @@
     <link rel="stylesheet" href="../../css/app.css">
 </head>
 <body>
-    <div class="container">
-        <form id="login-form" method="post" class="formulario">
+    <div class="formulario login">
+        <form id="login-form" method="post">
             <h2>Inicio de sesión</h2>
             <div class="username">
-                <input type="text" required>
+                <input id="userLogin" type="text" required>
                 <label>Nombre de usuario</label>
+            </div>
+            <div class="username">
+                <input id="contraLogin" type="password" required>
+                <label>Contraseña</label>
+            </div>
+            <input id="botonLoguearme" type="submit" value="login">
+            <div class="registro">
+                Quiero <a href="#" class="botonLogin">registrarme</a>
+            </div>
+        </form>
+    </div>
+    <div class="formulario registrar">
+        <form id="register-form" method="post">
+            <h2>Registro</h2>
+            <div class="username">
+                <input id="userRegister" type="text" required>
+                <label>Nombre de usuario</label>
+            </div>
+            <div class="username">
+                <input type="text" required>
+                <label>Apodo</label>
             </div>
             <div class="username">
                 <input type="password" required>
                 <label>Contraseña</label>
             </div>
-            <input type="submit" value="login">
+            <input id="botonRegistrar" type="submit" value="register">
             <div class="registro">
-                Quiero <a href="#">registrarme</a>
-
+                Quiero <a href="#" class="botonRegistro">loguearme</a>
             </div>
         </form>
-        <div id="register-form" class="formulario" method="post">
-            <h1>Registrarse</h1>
-            <form method="post">
-                <div class="username">
-                    <input type="text" required>
-                    <label>Nombre completo</label>
-                </div>
-                <div class="username">
-                    <input type="password" required>
-                    <label>Contraseña</label>
-                </div>
-                <div class="username">
-                    <input type="text" required>
-                    <label>Correo electrónico</label>
-                </div>
-                <input type="submit" value="login">
-                <div class="registro">
-                    Quiero <a href="#">acceder</a>
-    
-                </div>
-            </form>
-            
-        </div>
     </div>
-    
     <script src="../../js/app.js"></script>
 </body>
 </html>

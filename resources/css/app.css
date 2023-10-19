@@ -4,20 +4,20 @@ body {
     margin: 0;
     padding: 0;
     background: linear-gradient(150deg, #D5F5E3, #229954);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
- 
-.container {
-    text-align: center;
-    background-color: #f3f3f3;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+.login{
+    display: none;
 }
+
+.registrar{
+
+}
+
 .formulario{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
     width: 400px;
     background: white;
     border-radius: 10px;
