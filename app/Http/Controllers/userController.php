@@ -5,14 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller ;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
+use Laravel\Sanctum\HasApiTokens;
 
 class UserController extends Controller
 {
-    use AuthorizesRequests, ValidatesRequests;
+    use AuthorizesRequests, ValidatesRequests, HasApiTokens;
 
     public function obtener(){
         try{
@@ -25,21 +27,38 @@ class UserController extends Controller
         }
     }
 
+    public function post(Request $request){
 
-    public  function post(Request $request){
+        $rules = [
+            'email'    => 'required|string|email|max:100|unique:users',
+            'password' => 'required|string|min:6',
+            'nombre'   => 'string|max:100',
+            'apodo'    => 'required|string|max:100',
+            'foto'     => 'string|max:100',
+            ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if($validator->fails()) {
+            return response()->json(['error'=> $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+
+        $data['nombre'] = $request['nombre'] ?? null;
+        $data['email'] = $request['email'];
+        $data['apodo'] = $request['apodo'];
+        $data['foto'] = $request['foto'] ?? null;
+        $data['password'] = Hash::make($request['password']);
+
         try{
-
-            $data['nombre'] = $request['nombre'];
-            $data['email'] = $request['email'];
-            $data['apodo'] = $request['apodo'];
-            $data['foto'] = $request['foto'];
-            $data['password'] = $request['password'];
-            $res = User::create($data);
-            return response()->json($res, 201);
+            $user = User::create($data);
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario creado con exito!!',
+                // 'token'   => $user->createToken('API TOKEN')->plainTextToken
+            ], Response::HTTP_CREATED);
 
         }catch(\throwable $th){
              return response()->json(['error' => $th->getMessage()], 500);
-
         }
     }
 
