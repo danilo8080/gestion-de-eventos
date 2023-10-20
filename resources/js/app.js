@@ -38,6 +38,19 @@ document.addEventListener("DOMContentLoaded", function() {
         registerData.username = userRegister;
         registerData.apodo = apodoRegister;
         registerData.password = passwordRegister;
+        $.ajax({
+            url: "http://127.0.0.1:8000/api/v1/Usuario",
+            method: "POST",
+            data: {
+              email: userRegister,
+              apodo: apodoRegister,
+              password: passwordRegister
+            },
+            success: function(data) {
+              // Hacer algo con los datos
+              alert("usuario agregado")
+            }
+          });
         console.log(registerData);
         //código de registro
     });
