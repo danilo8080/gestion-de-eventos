@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Routing\Controller;
 
 class AuthController extends Controller
 {

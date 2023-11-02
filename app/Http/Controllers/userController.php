@@ -40,7 +40,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         if($validator->fails()) {
-            return response()->json(['error'=> $validator->errors()], Response::HTTP_BAD_REQUEST);
+            return response()->json(['error'=> $validator->errors()->all()], Response::HTTP_BAD_REQUEST);
         }
 
         $data['nombre'] = $request['nombre'] ?? null;
@@ -54,7 +54,8 @@ class UserController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario creado con exito!!',
-                // 'token'   => $user->createToken('API TOKEN')->plainTextToken
+                'user'    => $user,
+                'token'   => $user->createToken('API TOKEN')->plainTextToken
             ], Response::HTTP_CREATED);
 
         }catch(\throwable $th){
