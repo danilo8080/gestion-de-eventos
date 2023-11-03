@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 // use PHPUnit\Framework\TestCase;
 use Tests\TestCase;
@@ -12,6 +13,9 @@ class UserControllerTest extends TestCase
 
     public function testObtenerUsuarios()
     {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'sanctum');
+
         $response = $this->get(route('obtener'));
 
         $response->assertStatus(200);
