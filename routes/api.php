@@ -27,7 +27,7 @@ Route::post('auth/login', [AuthController::class,'login']);
 Route::middleware(['auth:sanctum'])->group(function () {
 
     // rutas usuarios
-    Route::get('/v1/usuario',[UserController::class, 'obtener']);
+    Route::get('v1/usuario',[UserController::class, 'obtener']);
     // Route::get('v1/usuario/{id}',[UserController::class, 'getbyId']);
     Route::put('v1/usuario/{email}',[UserController::class, 'put']);
     Route::delete('v1/usuario/{email}',[UserController::class, 'delete']);
