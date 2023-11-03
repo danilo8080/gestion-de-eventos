@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventosController;
+use App\Http\Controllers\EventosUserController;
 use App\Http\Controllers\userController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,18 +21,29 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 //    });
 
-// Route::post('/v1/Usuario',[UserController::class, 'post'])->name('create');
-// Route::post('auth/login', [AuthController::class,'login'])->name('login');
+Route::post('v1/usuario',[UserController::class, 'post']);
+Route::post('auth/login', [AuthController::class,'login']);
 
-// Route::middleware(['auth:sanctum'])->group(function () {
-// });
+Route::middleware(['auth:sanctum'])->group(function () {
 
-// Route::post('auth/logout', [AuthController::class,'logout'])->name('logout');
-Route::prefix('/v1/Usuario')->group(function(){
-    Route::get('/',[UserController::class, 'obtener'])->name('obtener');
-    Route::post('/',[UserController::class, 'post'])->name('create');
-    Route::get('/{id}',[UserController::class, 'getbyId']);
-    Route::put('/{id}',[UserController::class, 'put']);
-    Route::delete('/{id}',[UserController::class, 'delete']);
+    // rutas usuarios
+    Route::get('/v1/usuario',[UserController::class, 'obtener']);
+    // Route::get('v1/usuario/{id}',[UserController::class, 'getbyId']);
+    Route::put('v1/usuario/{email}',[UserController::class, 'put']);
+    Route::delete('v1/usuario/{email}',[UserController::class, 'delete']);
+    Route::post('auth/logout', [AuthController::class,'logout']);
+
+    // rutas contactos
+    Route::get('v1/listarcontactos', [UserController::class,'listarContactos']);
+    Route::get('v1/crearcontacto/{email}', [UserController::class,'crearContacto']);
+    Route::delete('v1/eliminarcontacto/{email}', [UserController::class,'eliminarContacto']);
+
+    // rutas eventos
+    Route::post('v1/crearevento', [EventosController::class,'store']);
+    Route::put('v1/editarevento/{id}', [EventosController::class,'update']);
+
+    Route::post('v1/agregarcontacto/{eventoId}', [EventosUserController::class,'agregarContacto']);
+    Route::delete('v1/eliminarcontacto/evento/{eventoId}/{contactoId}', [EventosUserController::class,'eliminarContacto']);
 
 });
+

@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('contactos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('descripcion', 200);
-            $table->string('correo', 30);
+            $table->unsignedBigInteger('user_id');
+            $table->string('email', 100);
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
