@@ -28,6 +28,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // rutas usuarios
     Route::get('v1/usuario',[UserController::class, 'obtener'])->name('obtener');
+    Route::get('v1/usuarios/buscar/{referencia?}',[UserController::class, 'buscarUsuarios']);
     // Route::get('v1/usuario/{id}',[UserController::class, 'getbyId']);
     Route::put('v1/usuario/{email}',[UserController::class, 'put']);
     Route::delete('v1/usuario/{email}',[UserController::class, 'delete']);
