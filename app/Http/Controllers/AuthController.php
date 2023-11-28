@@ -15,25 +15,20 @@ class AuthController extends Controller
     use HasApiTokens;
 
     public function login(Request $request) {
-        $credentials = $request->only("email","password");
-        $rules = [
-            'email'    => 'required|string|email|max:100',
-            'password' => 'required|string',
-            ];
-
-        $validator = Validator::make($request->all(), $rules);
-
-        if($validator->fails()) {
-            return response()->json(['error'=> $validator->errors()->all()], Response::HTTP_BAD_REQUEST);
+        // $newRequest = $request;
+        $user = User::where('email', $request->email)->first();
+        if(!$user) {
+            return response()->json([
+                'status' => false,
+                'error'  => 'No existe un registro con este email!!'
+            ], Response::HTTP_UNAUTHORIZED);
         }
-
         if(!Auth::attempt($request->only('email','password'))) {
             return response()->json([
                 'status' => false,
-                'error'  => 'Unauthorized'
+                'error'  => 'Contraseña invalida'
             ], Response::HTTP_UNAUTHORIZED);
         }
-        $user = User::where('email', $request->email)->first();
         return response()->json([
             'status'  => true,
             'message' => 'usuario logueado con exito',
@@ -43,7 +38,7 @@ class AuthController extends Controller
     }
 
     public function logout() {
-        auth()->user()->tokens->delete();
+        auth()->user()->tokens()->delete();
         return response()->json([
             'status'=> true,
             'message'=> 'Session cerrada'

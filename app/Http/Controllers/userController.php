@@ -34,9 +34,9 @@ class UserController extends Controller
         $rules = [
             'email'    => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:6',
-            'nombre'   => 'string|max:100',
+            'nombre'   => 'nullable|string|max:100',
             'apodo'    => 'required|string|max:100',
-            'foto'     => 'string|max:100',
+            'foto'     => 'nullable|string|max:100',
             ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -117,62 +117,103 @@ class UserController extends Controller
     public function crearContacto(string $email) {
 
         $contactoUser = User::where('email', $email)->first();
-        $user = Auth::user();
 
-        if ($contactoUser) {
+        if(!$contactoUser){
+            return response()->json([
+                        'success' => false,
+                        'message' => "El contacto con email: $email no existe"
+                    ], Response::HTTP_NOT_FOUND);
+        }
 
-            $existe = $user->contactos->where('email', $email)->first();
-            if ($existe) {
-                return response()->json([
-                    'success' => false,
-                    'message' => "El contacto con email: $email ya se encuentra en su lista de contactos"
-                ], Response::HTTP_CONFLICT);
-            }
+        $sessionUser = Auth::user();
+        $user = User::find($sessionUser->id);
 
-            $contacto = new Contactos();
-            $contacto->email = $contactoUser->email;
-            $contacto->user_id = $user->id;
-            $contacto->save();
+        $existingContacts = $user->contactos()->pluck('users.id')->toArray();
+
+        $user->contactos()->syncWithoutDetaching([$contactoUser->id]);
+
+        $newContacts = $user->contactos()->pluck('users.id')->toArray();
+
+        $addedContacts = array_diff($newContacts, $existingContacts);
+
+        if (count($addedContacts) > 0) {
 
             return response()->json([
                 'success'  => true,
                 'message'  => 'Contacto agregado con exito!!',
-                'contacto' => $contacto
+                'contacto' => $contactoUser
             ], Response::HTTP_OK);
+
         } else {
             return response()->json([
                 'success' => false,
-                'message' => "El contacto con email: $email no existe"
-            ], Response::HTTP_NOT_FOUND);
+                'message' => "El contacto con email: $email ya se encuentra en su lista de contactos"
+            ], Response::HTTP_CONFLICT);
         }
 
     }
 
     public function eliminarContacto(string $email) {
+
         $contactoUser = User::where("email", $email)->first();
+
         if (!$contactoUser) {
             return response()->json([
                 'success' => false,
                 'message' => "El contacto con email: $email no existe"
             ], Response::HTTP_NOT_FOUND);
         }
-        $contactoUser->delete();
+
+        $sessionUser = Auth::user();
+        $user = User::find($sessionUser->id);
+
+        $user->contactos()->detach($contactoUser->id);
 
         return response()->json([
-            'success'  => true,
-            'message'  => 'Contacto eliminado con exito!!',
-            'contacto' => $email
-        ], Response::HTTP_OK);
+                'success'  => true,
+                'message'  => "El contacto $contactoUser->nombre ha sido eliminado de su lista de contactos." ,
+                'contacto' => $email
+            ], Response::HTTP_OK);
+
+        // $contactoUser = User::where("email", $email)->first();
+        // if (!$contactoUser) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => "El contacto con email: $email no existe"
+        //     ], Response::HTTP_NOT_FOUND);
+        // }
+        // $contacto = Contactos::where("email", $email)->first();
+
+
+        // return response()->json([
+        //     'success'  => true,
+        //     'message'  => 'Contacto eliminado con exito!!',
+        //     'contacto' => $email
+        // ], Response::HTTP_OK);
     }
 
     public function listarContactos() {
 
-        $user = Auth::user();
-        $contactos = $user->contactos;
+        $user = User::find(Auth::user()->id);
+        $contactos = $user->contactos()->get();
+        // $contactos = $modelUser::getContactos($user->id);
 
         return response()->json([
             'success' => true,
             'data'    => $contactos
+        ], Response::HTTP_OK);
+    }
+
+    public function buscarUsuarios(?string $referencia = null) {
+        $referencia = $referencia ?? '';
+        $userModel = new User();
+
+        $userId = Auth::user()->id;
+        $usuarios = $userModel->buscarUsuariosPorReferencia($referencia, $userId);
+        
+        return response()->json([
+            'success' => true,
+            'data'    => $usuarios
         ], Response::HTTP_OK);
     }
 

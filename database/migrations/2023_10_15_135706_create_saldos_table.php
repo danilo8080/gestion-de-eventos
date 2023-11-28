@@ -18,8 +18,6 @@ return new class extends Migration
             $table->float('saldo', 50);
             $table->float('saldoPendiente', 50);
             $table->timestamps();
-            $table->foreign('idContacto')->references('id')->on('contactos');
-            $table->foreign('idEvento')->references('id')->on('eventos');
         });
     }
 
