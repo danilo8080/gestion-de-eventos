@@ -49,16 +49,20 @@ class User extends Authenticatable
 
     public static function buscarUsuariosPorReferencia(string $referencia, int $userId): array
     {
-        $usuarios = User::where(function ($query) use ($referencia) {
-            $query->where('email', 'LIKE', "%$referencia%")
-                  ->orWhere('apodo', 'LIKE', "%$referencia%")
-                  ->orWhere('nombre', 'LIKE', "%$referencia%");
-        })
-        ->where('id', '!=', $userId)
+        // $usuarios = User::where(function ($query) use ($referencia) {
+        //     $query->where('email', 'LIKE', "%$referencia%")
+        //           ->orWhere('apodo', 'LIKE', "%$referencia%")
+        //           ->orWhere('nombre', 'LIKE', "%$referencia%");
+        // })
+        // ->where('id', '!=', $userId)
+
+
+        $usuarios = User::contactos();
+
         // ->whereDoesntHave('contactos', function ($query) use ($userId) {
         //     $query->where('user_id', $userId);
         // })
-        ->get();
+        // ->get();
 
         $usuariosToArray = $usuarios->toArray();
 
