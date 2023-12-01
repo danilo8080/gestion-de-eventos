@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use Exception;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
@@ -35,38 +36,48 @@ class User extends Authenticatable
         'password'
     ];
 
-    public static function getContactos(int $userId): array
+    // public static function getContactos(int $userId): array
+    // {
+    //     $contactos = DB::table('contactos')
+    //                     ->join('users', 'contactos.email', '=', 'users.email')
+    //                     ->where('contactos.user_id', $userId)
+    //                     ->get();
+
+    //     return $contactos->toArray();
+    // }
+
+
+
+    public static function buscarUsuariosPorReferencia(string $referencia, int $usuarioLogueadoId): array
     {
-        $contactos = DB::table('contactos')
-                        ->join('users', 'contactos.email', '=', 'users.email')
-                        ->where('contactos.user_id', $userId)
-                        ->get();
+        $nonContactUsers = User::whereNotIn('id', function($query) use ($usuarioLogueadoId) {
+            $query->select('contact_id')
+                  ->from('user_contacts')
+                  ->where('user_id', $usuarioLogueadoId);
+        })->where(function ($query) use ($referencia) {
+                $query->where('email', 'LIKE', "%$referencia%")
+                      ->orWhere('apodo', 'LIKE', "%$referencia%")
+                      ->orWhere('nombre', 'LIKE', "%$referencia%");
+            })
+        ->get();
 
-        return $contactos->toArray();
-    }
-
-
-
-    public static function buscarUsuariosPorReferencia(string $referencia, int $userId): array
-    {
-        // $usuarios = User::where(function ($query) use ($referencia) {
-        //     $query->where('email', 'LIKE', "%$referencia%")
-        //           ->orWhere('apodo', 'LIKE', "%$referencia%")
-        //           ->orWhere('nombre', 'LIKE', "%$referencia%");
-        // })
-        // ->where('id', '!=', $userId)
-
-
-        $usuarios = User::contactos();
-
-        // ->whereDoesntHave('contactos', function ($query) use ($userId) {
-        //     $query->where('user_id', $userId);
-        // })
-        // ->get();
-
-        $usuariosToArray = $usuarios->toArray();
+        $usuariosToArray = $nonContactUsers->toArray();
 
         return $usuariosToArray;
+    }
+
+    public static function getFotos(array $usuarios): array
+    {
+        foreach ($usuarios as &$usuario) {
+            if($usuario['foto'] == null) {
+                continue;
+            }
+            $path = public_path('perfilImagenes/'.$usuario['foto']);
+            $usuario['foto'] = base64_encode(file_get_contents($path));
+            // dd($usuario['foto']);
+        }
+        // dd($usuarios);
+        return $usuarios;
     }
 
     public function contactos()

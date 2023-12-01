@@ -23,11 +23,11 @@ class EventosUserController extends Controller
             return response()->json(['message' => 'El usuario con el email especificado no existe'], Response::HTTP_NOT_FOUND);
         }
 
-        if ($evento->participantes()->contains($contacto)) {
-            return response()->json(['message' => 'El contacto ya está agregado al evento'], Response::HTTP_CONFLICT);
-        }
+        // if ($evento->participantes()->contains($contacto)) {
+        //     return response()->json(['message' => 'El contacto ya está agregado al evento'], Response::HTTP_CONFLICT);
+        // }
 
-        $evento->participantes->attach($contacto);
+        $evento->participantes()->attach($contacto);
 
         return response()->json(['message' => 'Contacto agregado exitosamente'], Response::HTTP_OK);
     }

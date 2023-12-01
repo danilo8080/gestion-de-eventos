@@ -29,14 +29,25 @@ class UserController extends Controller
         }
     }
 
-    public function post(Request $request){
+    public function base64ToImage($base64_string, $output_file) {
+        $data = explode(',', $base64_string);
+        if (isset($data[1])) {
+            $ifp = fopen($output_file, "wb");
+            fwrite($ifp, base64_decode($data[1]));
+            fclose($ifp);
+            return $output_file;
+        } else {
+            return false;
+        }
+    }
 
+    public function post(Request $request){
         $rules = [
             'email'    => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:6',
             'nombre'   => 'nullable|string|max:100',
             'apodo'    => 'required|string|max:100',
-            'foto'     => 'nullable|string|max:100',
+            'foto'     => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048'
             ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -48,10 +59,18 @@ class UserController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
+
+        if ($request->hasFile('foto')) {
+            $nombreImagen = time().'.'.$request->foto->extension();
+            $request->foto->move(public_path('perfilImagenes'), $nombreImagen);
+        } else {
+            $nombreImagen = 'default.jpg';
+        }
+
         $data['nombre'] = $request['nombre'] ?? null;
-        $data['email'] = $request['email'];
-        $data['apodo'] = $request['apodo'];
-        $data['foto'] = $request['foto'] ?? null;
+        $data['email']  = $request['email'];
+        $data['apodo']  = $request['apodo'];
+        $data['foto']   = $nombreImagen;
         $data['password'] = Hash::make($request['password']);
 
         try{
@@ -174,35 +193,32 @@ class UserController extends Controller
                 'message'  => "El contacto $contactoUser->nombre ha sido eliminado de su lista de contactos." ,
                 'contacto' => $email
             ], Response::HTTP_OK);
-
-        // $contactoUser = User::where("email", $email)->first();
-        // if (!$contactoUser) {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => "El contacto con email: $email no existe"
-        //     ], Response::HTTP_NOT_FOUND);
-        // }
-        // $contacto = Contactos::where("email", $email)->first();
-
-
-        // return response()->json([
-        //     'success'  => true,
-        //     'message'  => 'Contacto eliminado con exito!!',
-        //     'contacto' => $email
-        // ], Response::HTTP_OK);
     }
 
-    public function listarContactos() {
+    public function listarContactos(?string $referencia = '') {
 
         $user = User::find(Auth::user()->id);
-        $contactos = $user->contactos()->get();
-        // $contactos = $modelUser::getContactos($user->id);
+        $contactos = $user->contactos()->where('email', 'LIKE', "%$referencia%")->get();
+
+        $contactos = User::getFotos($contactos->toArray());
 
         return response()->json([
             'success' => true,
             'data'    => $contactos
         ], Response::HTTP_OK);
     }
+    // public function listarContactos() {
+
+    //     $user = User::find(Auth::user()->id);
+    //     $contactos = $user->contactos()->get();
+
+    //     $contactos = User::getFotos($contactos->toArray());
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data'    => $contactos
+    //     ], Response::HTTP_OK);
+    // }
 
     public function buscarUsuarios(?string $referencia = null) {
         $referencia = $referencia ?? '';
@@ -210,7 +226,9 @@ class UserController extends Controller
 
         $userId = Auth::user()->id;
         $usuarios = $userModel->buscarUsuariosPorReferencia($referencia, $userId);
-        
+
+        $usuarios = User::getFotos($usuarios);
+
         return response()->json([
             'success' => true,
             'data'    => $usuarios

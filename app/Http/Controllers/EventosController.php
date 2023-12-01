@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Eventos;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,7 @@ class EventosController extends Controller
             'nombre'      => 'required|string|max:100',
             'descripcion' => 'required|string|max:300',
             'tipo'        => 'required|string|max:30',
-            'avatar'      => 'string|max:100',
+            'avatar'      => 'nullable|string|max:100',
         ]);
 
         $user = Auth::user();
@@ -54,5 +55,34 @@ class EventosController extends Controller
         $evento->save();
 
         return response()->json(['message' => 'Evento modificado exitosamente'], Response::HTTP_OK);
+    }
+
+    public function delete(int $id){
+        try{
+            $res = Eventos::find($id)->delete();
+            return response()->json([
+                "deleted" => $res,
+                'message' => "Evento eliminado con exito!!"
+            ], 200);
+
+        }catch(\throwable $th){
+             return response()->json([
+                'error' => $th->getMessage()
+            ], 500);
+
+        }
+    }
+
+    public function buscarEventos(?string $referencia = null) {
+
+        $referencia = $referencia ?? '';
+        $userId  = Auth::user()->id;
+        $eventos = User::find($userId)->eventos()->where('nombre', 'LIKE', "%$referencia%")->get();
+        // $eventos = Eventos::buscarEventosPorReferencia($referencia, $userId);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $eventos
+        ], Response::HTTP_OK);
     }
 }
