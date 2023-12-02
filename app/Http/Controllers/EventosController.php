@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Eventos;
+use App\Models\Evento;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,14 +21,17 @@ class EventosController extends Controller
         ]);
 
         $user = Auth::user();
+        $user = User::find($user->id);
 
-        $evento = new Eventos;
+        $evento = new Evento;
         $evento->nombre      = $validatedData['nombre'];
         $evento->descripcion = $validatedData['descripcion'];
         $evento->tipo        = $validatedData['tipo'];
         $evento->avatar      = $validatedData['avatar'] ?? '';
         $evento->user_id     = $user->id;
         $evento->save();
+
+        $user->eventos()->attach($evento->id);
 
         return response()->json(['message' => 'Evento creado exitosamente'], Response::HTTP_CREATED);
     }
@@ -42,7 +45,7 @@ class EventosController extends Controller
             'avatar'      => 'string|max:100',
         ]);
 
-        $evento = Eventos::findOrFail($id);
+        $evento = Evento::findOrFail($id);
 
         if ($evento->user_id != Auth::id()) {
             return response()->json(['message' => 'No tienes permiso para modificar este evento'], Response::HTTP_FORBIDDEN);
@@ -59,7 +62,7 @@ class EventosController extends Controller
 
     public function delete(int $id){
         try{
-            $res = Eventos::find($id)->delete();
+            $res = Evento::find($id)->delete();
             return response()->json([
                 "deleted" => $res,
                 'message' => "Evento eliminado con exito!!"
@@ -78,7 +81,7 @@ class EventosController extends Controller
         $referencia = $referencia ?? '';
         $userId  = Auth::user()->id;
         $eventos = User::find($userId)->eventos()->where('nombre', 'LIKE', "%$referencia%")->get();
-        // $eventos = Eventos::buscarEventosPorReferencia($referencia, $userId);
+        // $eventos = Evento::buscarEventosPorReferencia($referencia, $userId);
 
         return response()->json([
             'success' => true,

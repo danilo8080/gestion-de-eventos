@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Eventos extends Model
+class Evento extends Model
 {
     use HasFactory;
 
     public static function buscarEventosPorReferencia(string $referencia, int $usuarioLogueadoId): array
     {
-        $eventos = Eventos::where('nombre', 'LIKE', "%$referencia%")
+        $eventos = Evento::where('nombre', 'LIKE', "%$referencia%")
                             ->where('user_id', $usuarioLogueadoId)
                             ->get();
 
@@ -21,13 +21,18 @@ class Eventos extends Model
     }
 
 
-    public function creador()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
+    // public function creador()
+    // {
+    //     return $this->belongsTo(User::class, 'user_id');
+    // }
 
     public function participantes()
     {
-        return $this->belongsToMany(User::class)->withPivot('acepto')->withTimestamps();
+        return $this->belongsToMany(User::class, 'evento_user');
+    }
+
+    public function actividades()
+    {
+        return $this->hasMany(Actividad::class);
     }
 }
